@@ -1,121 +1,67 @@
-// =========================
-// VARIABLES
-// =========================
+const SQUARE_COUNT = 3;
+const SPEED = 5;
+const TIMER_SPEED = 16.6;
 
-const squareCount = 10;
+document.addEventListener('DOMContentLoaded', () => {
+    let box = document.querySelector("#box");
 
-const container = document.getElementById("container");
+    box.addEventListener("mouseover", () => {
+    box.style.backgroundColor = NewColour();
+});
 
-const laughingMan = "laughingman_50x50.jpg";
-const orochimaru = "orochimaru_50x50.jpg";
+box.addEventListener("mouseout", () => {
+    box.style.backgroundColor = "white";
+});
 
-const squares = [];
+    for (let i = 0; i < SQUARE_COUNT; i++) {
+        let square = document.createElement('img');
+         square.src = "laughing_man.jpg";
+         square.alt = "Catch the Laughing Man!";
+        square.className = "square";
+        box.appendChild(square);
+        square.addEventListener("mouseover", () => {
+    square.src = "orochimaru_50x50.jpg";
+});
 
-// =========================
-// HELPER FUNCTION
-// =========================
-
-function getColor() {
-  const letters = "0123456789ABCDEF";
-  let color = "#";
-
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-
-  return color;
-}
-
-// =========================
-// CREATE SQUARES WITH LOOP
-// =========================
-
-for (let i = 0; i < squareCount; i++) {
-
-  const square = document.createElement("div");
-  square.classList.add("square");
-
-  const img = document.createElement("img");
-
-  img.src = laughingMan;
-
-  square.appendChild(img);
-
-  square.style.left =
-    Math.random() * (window.innerWidth - 60) + "px";
-
-  square.style.top =
-    Math.random() * (window.innerHeight - 60) + "px";
-
-  container.appendChild(square);
-
-  // Mouseover image
-  img.addEventListener("mouseover", function () {
-    img.src = orochimaru;
-  });
-
-  // Mouseout image
-  img.addEventListener("mouseout", function () {
-    img.src = laughingMan;
-  });
-
-  // Mouseover square background change
-  square.addEventListener("mouseover", function () {
-    square.style.backgroundColor = getColor();
-  });
-
-  squares.push({
-    element: square,
-    x: parseFloat(square.style.left),
-    y: parseFloat(square.style.top),
-    dx: Math.random() * 4 + 1,
-    dy: Math.random() * 4 + 1
-  });
-}
-
-// =========================
-// ANIMATION
-// =========================
-
-function animate() {
-
-  squares.forEach(function (squareObj) {
-
-    squareObj.x += squareObj.dx;
-    squareObj.y += squareObj.dy;
-
-    const square = squareObj.element;
-
-    // Wall collision X
-    if (
-      squareObj.x + 50 >= window.innerWidth ||
-      squareObj.x <= 0
-    ) {
-
-      squareObj.dx *= -1;
-
-      square.style.borderColor = getColor();
-      square.style.backgroundColor = getColor();
+square.addEventListener("mouseout", () => {
+    square.src = "laughing_man.jpg";
+});
     }
 
-    // Wall collision Y
-    if (
-      squareObj.y + 50 >= window.innerHeight ||
-      squareObj.y <= 0
-    ) {
+    Array.from(box.children).forEach((element) => {
+        const parent = element.parentElement;
+        const maxX = parent.clientWidth - element.clientWidth;
+        const maxY = parent.clientHeight - element.clientHeight;
 
-      squareObj.dy *= -1;
+        let dx = SPEED * Math.random() * 2 - 1;
+        let dy = SPEED * Math.random() * 2 - 1;
 
-      square.style.borderColor = getColor();
-      square.style.backgroundColor = getColor();
-    }
+        let x = parseInt(element.style.left) || 225;
+        let y = parseInt(element.style.top) || 175;
 
-    square.style.left = squareObj.x + "px";
-    square.style.top = squareObj.y + "px";
-
-  });
-
-  requestAnimationFrame(animate);
+        setInterval(() => {
+            if (x <= 0 || x >= maxX) {
+    dx *= -1;
+    element.style.borderColor = NewColour();
 }
 
-animate();
+if (y <= 0 || y >= maxY) {
+    dy *= -1;
+    element.style.borderColor = NewColour();
+}
+
+            x += dx;
+            y += dy;
+
+            element.style.left = x + "px";
+            element.style.top = y + "px";
+        }, TIMER_SPEED);
+    });
+});
+
+function NewColour() {
+    let r = Math.floor(Math.random() * 256);
+    let g = Math.floor(Math.random() * 256);
+    let b = Math.floor(Math.random() * 256);
+    return `rgb(${r}, ${g}, ${b})`;
+}
